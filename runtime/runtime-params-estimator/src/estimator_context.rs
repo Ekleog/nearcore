@@ -94,6 +94,7 @@ impl<'c> EstimatorContext<'c> {
         // Create ShardTries with relevant settings adjusted for estimator.
         let mut trie_config = near_store::TrieConfig::default();
         trie_config.enable_receipt_prefetching = true;
+        trie_config.load_mem_tries_for_tracked_shards = true;
         let tries = ShardTries::new(
             store,
             trie_config,
@@ -101,6 +102,9 @@ impl<'c> EstimatorContext<'c> {
             flat_storage_manager,
             StateSnapshotConfig::default(),
         );
+        println!("state dump path: {}", self.config.state_dump_path);
+        loop {}
+        tries.load_mem_tries_for_enabled_shards(&[shard_uid], true).unwrap();
         let cache = FilesystemContractRuntimeCache::new(workdir.path(), None::<&str>)
             .expect("create contract cache");
 
